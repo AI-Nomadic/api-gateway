@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: api-gateway
+
+# Downstream service URLs — Docker internal hostnames
+gateway:
+  routes:
+    auth-service: http://auth-service:8083
+    trip-service: http://trip-service:8080
+    collab-service: http://collaboration-service:8082
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}

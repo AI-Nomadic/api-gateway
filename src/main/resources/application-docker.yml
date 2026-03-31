@@ -8,6 +8,7 @@ gateway:
     auth-service: http://auth-service:8083
     trip-service: http://trip-service:8080
     collab-service: http://collaboration-service:8082
+    ai-planner: http://ai-planner:8888
 
 app:
   jwt:

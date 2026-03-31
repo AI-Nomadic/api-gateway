@@ -11,6 +11,7 @@ gateway:
     auth-service: http://localhost:8083
     trip-service: http://localhost:8080
     collab-service: http://localhost:8082
+    ai-planner: http://localhost:8888
 
 app:
   jwt:

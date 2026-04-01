@@ -62,7 +62,7 @@ public class ReverseProxy {
         }
 
         String targetUri = targetBase + path + (query != null ? "?" + query : "");
-        log.debug("Proxying {} {} → {}", method, path, targetUri);
+        log.info("--- [API GATEWAY] Proxying {} to {} ---", method, targetUri);
 
         // Forward all headers (including the trusted X-User-* ones added by
         // JwtAuthFilter)

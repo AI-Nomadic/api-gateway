@@ -31,6 +31,9 @@ public class ReverseProxy {
     @Value("${gateway.routes.collab-service}")
     private String collabServiceUrl;
 
+    @Value("${gateway.routes.ai-planner}")
+    private String aiPlannerUrl;
+
     private final WebClient webClient;
 
     public ReverseProxy(WebClient.Builder builder) {
@@ -47,6 +50,8 @@ public class ReverseProxy {
         String targetBase;
         if (path.startsWith("/auth")) {
             targetBase = authServiceUrl;
+        } else if (path.startsWith("/api/planner")) {
+            targetBase = aiPlannerUrl;
         } else if (path.startsWith("/api")) {
             targetBase = tripServiceUrl;
         } else if (path.startsWith("/collab")) {

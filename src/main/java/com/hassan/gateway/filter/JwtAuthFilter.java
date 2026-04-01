@@ -37,7 +37,8 @@ public class JwtAuthFilter implements WebFilter {
     private static final List<String> PUBLIC_PATHS = List.of(
             "/auth/login",
             "/auth/register",
-            "/auth/google");
+            "/auth/google",
+            "/api/planner");
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {

@@ -8,10 +8,10 @@ server:
 # Downstream service URLs
 gateway:
   routes:
-    authService: http://localhost:8083
-    tripService: http://localhost:8080
-    collabService: http://localhost:8082
-    aiPlanner: http://localhost:8888
+    auth-service: http://localhost:8083
+    trip-service: http://localhost:8080
+    collab-service: http://localhost:8082
+    ai-planner: http://localhost:8888
   cors:
     allowed-origins: "http://localhost:3000,http://localhost:5173"
 

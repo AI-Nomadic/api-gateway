@@ -10,7 +10,7 @@ gateway:
     collab-service: http://collaboration-service:8082
     ai-planner: http://ai-planner:8888
   cors:
-    allowed-origins: "http://localhost:5173"
+    allowed-origins: ["http://localhost:5173", "http://localhost:3000"]
 
 app:
   jwt:

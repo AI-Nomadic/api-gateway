@@ -1,6 +1,6 @@
 package com.hassan.gateway.config;
 
-import com.hassan.gateway.proxy.ReverseProxy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -16,7 +16,10 @@ import org.springframework.web.server.WebFilter;
 import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
 public class GatewayConfig {
+
+    private final GatewayProperties gatewayProperties;
 
     /**
      * WebClient.Builder bean — required so Spring can auto-inject it into
@@ -34,11 +37,14 @@ public class GatewayConfig {
     @Order(-2)
     public WebFilter corsPreflightFilter() {
         return (exchange, chain) -> {
+            String origin = exchange.getRequest().getHeaders().getOrigin();
+            List<String> allowedOrigins = gatewayProperties.getCors().getAllowedOrigins();
+            
             if (exchange.getRequest().getMethod() == HttpMethod.OPTIONS) {
                 HttpHeaders h = exchange.getResponse().getHeaders();
-                String origin = exchange.getRequest().getHeaders().getOrigin();
-                if (origin != null)
+                if (origin != null && allowedOrigins.contains(origin)) {
                     h.add("Access-Control-Allow-Origin", origin);
+                }
                 h.add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
                 h.add("Access-Control-Allow-Headers", "*");
                 h.add("Access-Control-Allow-Credentials", "true");
@@ -47,8 +53,7 @@ public class GatewayConfig {
                 return exchange.getResponse().setComplete();
             }
             // Add CORS response headers to all real requests
-            String origin = exchange.getRequest().getHeaders().getOrigin();
-            if (origin != null) {
+            if (origin != null && allowedOrigins.contains(origin)) {
                 exchange.getResponse().getHeaders().add("Access-Control-Allow-Origin", origin);
                 exchange.getResponse().getHeaders().add("Access-Control-Allow-Credentials", "true");
             }
@@ -62,7 +67,7 @@ public class GatewayConfig {
      */
     @Bean
     @Order(1)
-    public WebFilter proxyFilter(ReverseProxy proxy) {
+    public WebFilter proxyFilter(com.hassan.gateway.proxy.ReverseProxy proxy) {
         return (exchange, chain) -> proxy.forward(exchange);
     }
 
@@ -72,7 +77,7 @@ public class GatewayConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        config.setAllowedOrigins(gatewayProperties.getCors().getAllowedOrigins());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

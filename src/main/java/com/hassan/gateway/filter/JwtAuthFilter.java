@@ -1,10 +1,11 @@
 package com.hassan.gateway.filter;
 
+import com.hassan.gateway.config.AppProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,11 +29,11 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor
 @Order(-1) // Runs after corsPreflightFilter(-2) but BEFORE proxyFilter(1)
 public class JwtAuthFilter implements WebFilter {
 
-    @Value("${app.jwt.secret}")
-    private String jwtSecret;
+    private final AppProperties appProperties;
 
     private static final List<String> PUBLIC_PATHS = List.of(
             "/auth/login",
@@ -81,7 +82,8 @@ public class JwtAuthFilter implements WebFilter {
     }
 
     private Claims parseToken(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        String secret = appProperties.getJwt().getSecret();
+        SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         return Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(token).getPayload();
     }

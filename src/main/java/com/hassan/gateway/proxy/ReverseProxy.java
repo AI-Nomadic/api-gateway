@@ -1,7 +1,7 @@
 package com.hassan.gateway.proxy;
 
+import com.hassan.gateway.config.GatewayProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -22,25 +22,21 @@ import reactor.core.publisher.Mono;
 @Component
 public class ReverseProxy {
 
-    @Value("${gateway.routes.auth-service}")
-    private String authServiceUrl;
-
-    @Value("${gateway.routes.trip-service}")
-    private String tripServiceUrl;
-
-    @Value("${gateway.routes.collab-service}")
-    private String collabServiceUrl;
-
-    @Value("${gateway.routes.ai-planner}")
-    private String aiPlannerUrl;
-
+    private final GatewayProperties gatewayProperties;
     private final WebClient webClient;
 
-    public ReverseProxy(WebClient.Builder builder) {
+    public ReverseProxy(WebClient.Builder builder, GatewayProperties gatewayProperties) {
         this.webClient = builder.build();
+        this.gatewayProperties = gatewayProperties;
     }
 
     public Mono<Void> forward(ServerWebExchange exchange) {
+        GatewayProperties.Routes routes = gatewayProperties.getRoutes();
+        String authServiceUrl = routes.getAuthService();
+        String tripServiceUrl = routes.getTripService();
+        String collabServiceUrl = routes.getCollabService();
+        String aiPlannerUrl = routes.getAiPlanner();
+
         ServerHttpRequest req = exchange.getRequest();
         String path = req.getURI().getPath();
         String query = req.getURI().getRawQuery();

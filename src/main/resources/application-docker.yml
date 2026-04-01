@@ -5,10 +5,12 @@ spring:
 # Downstream service URLs — Docker internal hostnames
 gateway:
   routes:
-    auth-service: http://auth-service:8083
-    trip-service: http://trip-service:8080
-    collab-service: http://collaboration-service:8082
-    ai-planner: http://ai-planner:8888
+    authService: http://auth-service:8083
+    tripService: http://trip-service:8080
+    collabService: http://collaboration-service:8082
+    aiPlanner: http://ai-planner:8888
+  cors:
+    allowed-origins: "http://localhost:5173"
 
 app:
   jwt:
